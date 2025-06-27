@@ -1,0 +1,133 @@
+<head>
+
+    <elevenlabs-convai id = "convai" agent-id="" dynamic-variables='{}'></elevenlabs-convai>
+
+    <script>
+
+        const params = new URLSearchParams(window.location.search);
+
+        const agent_id = "agent_01jygkwh6aexfv0wgzj88bge8y";
+
+        // Access values
+        const country_origin = params.get("country_origin") == null ? "" : params.get("country_origin");
+        const country_curiosity = params.get("country_curiosity") == null ? "" : params.get("country_curiosity");
+        const lesson_context = params.get("lesson_context") == null ? "" : params.get("lesson_context");
+        const explorer_name = params.get("explorer_name") == null ? "" : params.get("explorer_name");
+        const age = params.get("age") == null ? "" : params.get("age");
+
+        var statusArea;
+
+        // Find the ElevenLabs element
+        const convaiEl = document.getElementById("convai");
+
+        // Build the dynamic-variables object
+        const dynamicVariables = {
+            country_origin,
+            country_curiosity,
+            lesson_context,
+            explorer_name,
+            age
+        };
+        
+
+        // Set the attribute as a JSON string
+        convaiEl.setAttribute("dynamic-variables", JSON.stringify(dynamicVariables));
+        convaiEl.setAttribute("agent-id", agent_id);
+
+    </script>
+
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+    <script>
+  function startConversation() {
+    const widget = document.querySelector("elevenlabs-convai");
+
+    if (!widget || !widget.shadowRoot) {
+      console.error("Widget não encontrado ou não pronto.");
+      return;
+    }
+
+    // Clica no botão do balão/flutuante
+    const micButton = widget.shadowRoot.querySelector('button[aria-label="Start a call"]');
+    if (micButton) micButton.click();
+
+    // Aguarda o botão "Accept" aparecer e clica nele
+    setTimeout(() => {
+      const buttons = widget.shadowRoot.querySelectorAll('button');
+      let accepted = false;
+
+      for (let btn of buttons) {
+        if (btn.textContent.trim() === "Accept") {
+          btn.click();
+          accepted = true;
+          console.log("✅ Botão 'Accept' clicado");
+          break;
+        }
+      }
+
+      // Se aceitou, tenta clicar no botão de microfone depois
+      if (accepted) {
+        setTimeout(() => {
+          // Encontrar botão de microfone dentro do widget expandido
+          const micButton = [...widget.shadowRoot.querySelectorAll('button')].find(b =>
+            b.innerHTML.includes("microphone") || b.innerText.trim() === ""
+          );
+          if (micButton) {
+            micButton.click();
+            console.log("🎤 Botão de microfone clicado");
+          } else {
+            console.warn("❌ Botão de microfone não encontrado");
+          }
+
+        }, 100); // ajuste esse delay se necessário
+      }
+
+    }, 100); // delay para aceitar os termos
+  }
+
+  setInterval(() => {
+    
+    const widget = document.querySelector("elevenlabs-convai");
+
+    if (!widget || !widget.shadowRoot) {
+      console.error("Widget não encontrado ou não pronto.");
+      return;
+    }
+
+    statusArea = widget.shadowRoot.querySelector('div[class="animate-text whitespace-nowrap transition-[opacity,transform] ease-out duration-200 data-hidden:opacity-0 transform data-hidden:translate-y-2"]');
+    
+    if(statusArea != null)
+    {
+      console.log(statusArea.innerHTML);
+      var message = "";
+      switch(statusArea.innerHTML)
+      {
+        case "Talk to interrupt":
+          message = 'audioRunning';
+          break;
+        case "Connecting":
+          message= 'audioConnecting';
+          break;
+        case "Listening":
+          message = 'audioStopped';
+          break;
+      }
+
+      if(typeof Unity !== "undefined")
+      {
+          Unity.call(message);
+      }
+
+    }
+  }, 50);
+
+
+    </script>
+
+</head>
+
+<body>
+
+    <button onclick="startConversation()">Test</button>
+
+</body>
