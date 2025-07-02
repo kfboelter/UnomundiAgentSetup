@@ -122,12 +122,33 @@
   }, 50);
 
 
+    function toggleMic(){
+
+    const widget = document.querySelector("elevenlabs-convai");
+
+    if (!widget || !widget.shadowRoot) {
+      console.error("Widget not found.");
+      return;
+    }
+
+    const muteButton = widget.shadowRoot.querySelector('button[class="h-9 flex px-2.5 text-sm items-center transition-colors justify-center rounded-button duration-200 focus-ring overflow-hidden select-none text-base-primary border border-base-border bg-base hover:bg-base-hover active:bg-base-active min-w-9"]');
+    
+    if(muteButton != null){
+      muteButton.click();
+    }
+    else{
+      console.log("Microphone button not found");
+    }
+
+  }
+
     </script>
 
 </head>
 
 <body>
 
-    <button onclick="startConversation()">Test</button>
+    <button onclick="startConversation()">Start Conversation</button>
+    <button onclick="toggleMic()">Toggle Microphone</button>
 
 </body>
